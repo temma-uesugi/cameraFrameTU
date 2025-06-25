@@ -1,0 +1,33 @@
+<html>
+  <body style="margin:0;">
+    <video id="camera" autoplay playsinline style="display:none;"></video>
+    <canvas id="canvas" style="width:100vw; height:100vh; display:block;"></canvas>
+    <script>
+      const video = document.getElementById('camera');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const frameImg = new Image();
+      frameImg.src = './test.png'; // 透過PNGの例
+
+      // カメラ起動
+      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            if(frameImg.complete) {
+              ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+            }
+            requestAnimationFrame(draw);
+          }
+          draw();
+        };
+      }).catch(e => {
+        alert('カメラが許可されていないか、対応していないブラウザです');
+      });
+    </script>
+  </body>
+</html>
